@@ -99,7 +99,7 @@ function MainCard() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>DilDask</CardTitle>
+        <CardTitle>DilDash</CardTitle>
         <CardDescription>
           Choose your level blah blah blah blah blah
         </CardDescription>
