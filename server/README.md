@@ -1,3 +1,9 @@
+### Install Dependencies
+You need to install dependencies first to use
+```
+pip install -r requirements.txt
+```
+
 ### Server
 Server is run on my local IP Address. You can change it to `127.0.0.1`, however if done, you need to do the same to all other occurances in the website as well. Come on! you can handle it! 💪💪
 
