@@ -6,7 +6,7 @@ from flask import Flask, request, jsonify
 from flask.wrappers import json
 from flask_cors import CORS
 from ollama import generate_conversation_and_questions, parse_questions
-from db import DB_NAME, add_conversation, get_all_conversations
+from db import DB_NAME, add_conversation, get_all_conversations, get_conversation
 import sqlite3
 
 
@@ -71,22 +71,9 @@ def add_random_conversation():
 
 # get conversations from the database
 @app.route('/conversations/<int:conversation_id>', methods=['GET'])
-def get_conversation(conversation_id):
+def get_conversation_(conversation_id):
     conn = sqlite3.connect('dildash.db')
-    cursor = conn.cursor()
-    cursor.execute('SELECT id, num_speaker, level, topic, conversation, questions FROM conversations WHERE id = ?', (conversation_id,))
-    row = cursor.fetchone()
-    if row is None:
-        return jsonify({"error": "Conversation not found"}), 404
-
-    conversation = {
-        "id": row[0],
-        "num_speaker": row[1],
-        "level": row[2],
-        "topic": row[3],
-        "conversation": row[4],
-        "questions": row[5]
-    }
+    conversation = get_conversation(conn, conversation_id)
     conn.close()
     return jsonify(conversation)
 

@@ -27,7 +27,7 @@ conv_type = [
 
 levels = ["beginner", "intermediate", "upper-intermediate", "advanced", "expert"]
 
-def generate_conversation_and_questions(num_speaker, num_questions, level_idx, length, topic_idx=random.randint(0, len(topics) - 1)):
+def generate_conversation_and_questions(num_speaker, num_questions, level_idx, length, topic_idx=None):
     """
     @param num_speaker: int, number of speakers
     @param level: int, level of English
@@ -35,8 +35,8 @@ def generate_conversation_and_questions(num_speaker, num_questions, level_idx, l
     @return: tuple, topic conversation and questions
     """
 
-    if topic_idx > len(topics) - 1 or topic_idx < 0:
-        raise ValueError("Invalid topic index")
+    if topic_idx is None:
+        topic_idx=random.randint(0, len(topics) - 1)
 
     if level_idx > len(levels) - 1 or level_idx < 0:
         raise ValueError("Invalid level index")
@@ -149,7 +149,6 @@ def parse_questions(response: str, delimiter: str = '---'):
         raise Exception(f"Delimiter '{delimiter}' not found in the response.")
 
     response = response[index + len(delimiter):].strip()
-    print(len(response))
 
     # Regular expression to capture each question block
     question_blocks = re.split(r'---', response.strip())
@@ -172,7 +171,6 @@ def parse_questions(response: str, delimiter: str = '---'):
             index, option = option_line.split('.', 1)
             index = index.strip()
             option = option.strip()
-            print(ord(index) - ord('A'))
             options[ord(index) - ord('A')] = option
 
         # Extract correct answer
@@ -206,12 +204,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
 
-    if args.topic > len(topics) - 1 or args.topic < 0:
-        raise ValueError("Invalid topic index")
-    if args.level > len(levels) - 1 or args.level < 0:
-        raise ValueError("Invalid level index")
-    if args.num_speakers < 1:
-        raise ValueError("Invalid number of speakers. Choose a number greater than 0.")
 
     num_speakers = args.num_speakers if args.num_speakers else int(input("enter the number of the speaker: "))
     num_questions = args.num_questions if args.num_questions else int(input("enter the number of questions you want to generate: "))
@@ -223,11 +215,16 @@ if __name__ == "__main__":
     length = args.length if args.length else int(input("Enter the length of the conversation in sentences: "))
     topic_idx = args.topic
 
+    if level_idx > len(levels) - 1 or level_idx < 0:
+        raise ValueError("Invalid level index")
+    if num_speakers < 1:
+        raise ValueError("Invalid number of speakers. Choose a number greater than 0.")
+
     topic, conversation, questions = generate_conversation_and_questions(num_speakers, num_questions, level_idx, length, topic_idx=topic_idx)
 
-    print("The converation on the topic (%s)\n\n%s" % (topic.upper(), conversation))
+    print("The converation on the topic (%s)\n\nCONVERSATION:\n%s" % (topic.upper(), conversation.strip()))
 
-    print("\n\n\n------------------\n\n\n")
+    print("\n\n")
 
     questions = parse_questions(questions)
 

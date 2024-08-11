@@ -157,7 +157,7 @@ export const Icons = {
       {...props}
     >
       <g transform="translate(0,0)">
-        <circle cx="50" cy="50" r="40" fill="none" stroke-width="8" />
+        <circle cx="50" cy="50" r="40" fill="none" strokeWidth="8" />
         {/*stroke="#4CAF50"*/}
       </g>
     </svg>
@@ -181,7 +181,7 @@ export const Icons = {
           height="80"
           fill="none"
           stroke="currentColor"
-          stroke-width="8"
+          strokeWidth="8"
         />
         {/*"#FFC107"*/}
       </g>
@@ -204,7 +204,7 @@ export const Icons = {
           points="50,10 90,90 10,90"
           fill="none"
           stroke="currentColor"
-          stroke-width="8"
+          strokeWidth="8"
         />
         {/*stroke="#F44336"*/}
       </g>

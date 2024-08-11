@@ -1,0 +1,12 @@
+---
+import Layout from '../layouts/Layout.astro';
+import OllamaConversation from '@/components/conversation.tsx';
+import '@/globals.css';
+---
+
+<Layout title="Questions">
+<main class="py-80">
+    <OllamaConversation client:load/>
+	</main>
+</Layout>
+

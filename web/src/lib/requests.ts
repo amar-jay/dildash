@@ -3,39 +3,63 @@ export interface Speaker {
   message: string;
 }
 
-export interface Question {
+type Option = {
+  _index: number;
+  value: string;
+};
+
+type CorrectAnswer = {
+  _index: number;
+  value: string;
+};
+
+export type Question = {
   question: string;
-  options: { option: string }[];
-  answer: { index: number; value: string };
-}
+  options: Option[];
+  correct: CorrectAnswer;
+};
 
 export interface ConversationResponse {
-  conversation: Speaker[];
+  conversation: Speaker[]; // TODO: do this string manipulation in the backend as well
   id: number;
   level: number;
-  num_speaker: number;
+  num_speakers: number;
   questions: Question[];
   topic: string;
 }
 
+const urls = {
+  getConversation: (id: number) =>
+    `http://172.20.10.2:5000/conversations/${id}`,
+  generateConversation: (
+    level?: number,
+    length?: number,
+    num_speakers?: number,
+    num_questions?: number,
+  ) =>
+    `http://172.20.10.2:5000/generate?level=${level}&length=${length}&num_speakers=${num_speakers}&num_questions=${num_questions}`,
+} as const;
+
 export async function getConversation(
   id?: number,
 ): Promise<ConversationResponse> {
-  if (id === undefined) {
-    id = Math.floor(Math.random() * 10) + 1;
-  }
+  return fetchConversation(urls.getConversation(id));
+}
 
+export async function generateConversation(
+  level?: number,
+  length?: number,
+  num_speakers?: number,
+  num_questions?: number,
+): Promise<ConversationResponse> {
+  return fetchConversation(
+    urls.generateConversation(level, length, num_speakers, num_questions),
+  );
+}
+
+async function fetchConversation(url: string): Promise<ConversationResponse> {
   try {
-    const response = await fetch(
-      `http://172.20.10.2:5000/conversations/${id}`,
-      {
-        method: "GET",
-        mode: "cors",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
-    );
+    const response = await fetch(url);
     if (!response.ok) {
       throw new Error(`HTTP error status: ${response.status}`);
     }
@@ -45,79 +69,20 @@ export async function getConversation(
     // Format conversation string into array of speakers
     const formattedConversation: Speaker[] = data.conversation
       .split("\n")
+      .filter((line: string) => line !== "")
       .map((line: string) => {
         const [name, message] = line.split(": ");
         return { name, message };
       });
 
-    // Format questions string into array of questions
-    const formattedQuestions: Question[] = data.questions
-      .split("\n\n")
-      .filter((section: string) => section.trim())
-      .map((section: string) => {
-        const lines = section.split("\n");
-        const questionText = lines.shift()!.trim();
-        const optionsTexts = lines.map((line) => line.trim());
-
-        const options = optionsTexts.map((optionText, index) => ({
-          option: optionText.replace(/^[a-z]$$/i, ""),
-          correct:
-            index === optionsTexts.length - 1 && optionText.includes("Answer:"),
-        }));
-
-        const answer =
-          optionsTexts
-            .filter(
-              (optionText, index) =>
-                optionsTexts.length - 1 === index &&
-                optionText.includes("Answer:"),
-            )[0]
-            ?.replace("Answer: ", "") ?? "No answer found";
-
-        return {
-          question: questionText,
-          options,
-          answer: { value: answer, index: null },
-        };
-      });
-
-    const formattedAnwers: Question[] = data.questions
-      .split("\n\n")
-      .filter((section: string) => section.trim())
-      .map((section: string) => {
-        const lines = section.split("\n");
-        const questionText = lines.shift()!.trim();
-        const optionsTexts = lines.map((line) => line.trim());
-
-        const options = optionsTexts.map((optionText, index) => ({
-          option: optionText.replace(/^[a-z]$$/i, ""),
-          correct:
-            index === optionsTexts.length - 1 && optionText.includes("Answer:"),
-        }));
-
-        const answer =
-          optionsTexts
-            .filter(
-              (optionText, index) =>
-                optionsTexts.length - 1 === index &&
-                optionText.includes("Answer:"),
-            )[0]
-            ?.replace("Answer: ", "") ?? "No answer found";
-
-        return {
-          question: questionText,
-          options,
-          answer: { value: answer, index: null },
-        };
-      });
-
+    console.log("formattedConversation", formattedConversation);
     // Return formatted data with correct types
     return {
       conversation: formattedConversation,
       id: data.id,
       level: data.level,
-      num_speaker: data.num_speaker,
-      questions: formattedQuestions,
+      num_speakers: data.num_speakers,
+      questions: data.questions,
       topic: data.topic,
     };
   } catch (error) {

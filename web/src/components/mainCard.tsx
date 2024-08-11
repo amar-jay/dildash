@@ -76,6 +76,7 @@ function MainCardSkeleton() {
 
 export default function MainPageCard() {
   const [loading, setLoading] = useState(false);
+  /*
   // simulate loading page
   useEffect(() => {
     // Simulate a network request delay
@@ -90,6 +91,7 @@ export default function MainPageCard() {
     return () => clearTimeout(timer);
   }, [loading]); // Empty dependency array ensures this effect runs only once on mount
 
+  */
   return loading ? <MainCardSkeleton /> : <MainCard />;
 }
 

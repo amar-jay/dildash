@@ -32,7 +32,7 @@ def add_conversation(conn:Connection, num_speakers, level, topic, conversation_t
     :param topic: Topic of the conversation.
     :param conversation_text: The actual conversation text.
     :param questions: A list of dictionaries representing questions. Each dictionary should have keys:
-                      'question' (str), 'options' (list of str), and 'correct_answer' (str).
+                      'question' (str), 'options' (list of str), and 'correct' { str, index } .
     """
 
 
@@ -53,7 +53,7 @@ def add_conversation(conn:Connection, num_speakers, level, topic, conversation_t
         for question_data in questions:
             question_text = question_data['question']
             options = question_data['options']
-            correct_answer = question_data['correct_answer']
+            correct_answer = question_data['correct']
 
             # Insert the correct answer
             cursor.execute('''
@@ -167,7 +167,7 @@ def get_all_conversations(conn:Connection):
                 question_data = {
                     'question': question_text,
                     'options': [{'index': opt[0], 'value': opt[1]} for opt in options],
-                    'correct_answer': {'index': correct_index, 'value': correct_value}
+                    'correct': {'index': correct_index, 'value': correct_value}
                 }
 
                 # Add the question to the conversation
@@ -248,7 +248,7 @@ def get_conversation(conn, conversation_id):
             question_data = {
                 'question': question_text,
                 'options': [{'_index': opt[0], 'value': opt[1]} for opt in options],
-                'correct_answer': {'_index': correct_index, 'value': correct_value}
+                'correct': {'_index': correct_index, 'value': correct_value}
             }
 
             # Add the question to the conversation
@@ -314,7 +314,7 @@ if __name__ == "__main__":
         for q in conversation['questions']:
             print(f"  Question: {q['question']}")
             print(f"  Options: {', '.join([o['value'] for o in q['options']])}")
-            print(f"  Correct Answer: {q['correct_answer']['value']}")
+            print(f"  Correct Answer: {q['correct']['value']}")
             print()
         print()
 
@@ -334,7 +334,7 @@ if __name__ == "__main__":
             for q in conversation['questions']:
                 print(f"  Question: {q['question']}")
                 print(f"  Options: {', '.join([o['value'] for o in q['options']])}")
-                print(f"  Correct Answer: {q['correct_answer']['value']}")
+                print(f"  Correct Answer: {q['correct']['value']}")
                 print()
             print()
 

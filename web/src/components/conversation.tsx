@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useOllamaConversation, type Question } from "@/lib/requests";
 import {
   Card,
@@ -13,7 +13,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import {
   AlertCircle,
-  Forward,
+  ArrowRight,
   MessageCircleQuestion,
   RefreshCw,
   TextQuote,
@@ -21,6 +21,7 @@ import {
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 const QuestionComponent = ({
   question,
@@ -39,6 +40,11 @@ const QuestionComponent = ({
     }
   };
 
+  useEffect(() => {
+    setIsAnswered(false);
+    setSelectedOption("");
+  }, [question.question]);
+
   return (
     <Card className="mb-4">
       <CardContent className="pt-6">
@@ -51,7 +57,17 @@ const QuestionComponent = ({
                 id={`option-${optionIndex}`}
                 disabled={isAnswered}
               />
-              <Label htmlFor={`option-${optionIndex}`}>{option.option}</Label>
+              <Label
+                htmlFor={`option-${option._index}`}
+                className={cn(
+                  question.correct._index + 1 === new Number(selectedOption) &&
+                    optionIndex === question.correct._index + 1
+                    ? "text-red-500"
+                    : "",
+                )}
+              >
+                {option.value}
+              </Label>
             </div>
           ))}
         </RadioGroup>
@@ -65,9 +81,19 @@ const QuestionComponent = ({
           </Button>
         )}
         {isAnswered && (
-          <div className="mt-4 p-2 bg-green-100 rounded">
+          <div
+            className={cn(
+              "mt-4 p-2",
+              question.correct._index.toString() === selectedOption
+                ? "bg-green-100"
+                : "bg-red-100",
+              "rounded",
+            )}
+          >
             <p className="font-semibold">Correct Answer:</p>
-            <p> {question.answer.value}</p>
+            <p>
+              {question.correct._index + 1}. {question.correct.value}
+            </p>
           </div>
         )}
       </CardContent>
@@ -97,7 +123,7 @@ const QuestionsSection = ({ questions }: { questions: Question[] }) => {
         disabled={answeredQuestions === questions.length - 1}
         className="my-5 w-full"
       >
-        Skip Question <Forward className="ml-5 h-4 w-4" />
+        Next Question <ArrowRight className="ml-5 h-4 w-4" />
       </Button>
     </div>
   );
@@ -105,11 +131,11 @@ const QuestionsSection = ({ questions }: { questions: Question[] }) => {
 
 enum View {
   Conversation = "conversation",
-  Answers = "answers",
+  Questions = "questions",
 }
 const OllamaConversation = () => {
-  const [conversationData, loading, error] = useOllamaConversation(10);
-  const [view, setView] = React.useState<View>(View.Answers);
+  const [conversationData, loading, error] = useOllamaConversation(7);
+  const [view, setView] = React.useState<View>(View.Questions);
 
   if (loading) {
     return (
@@ -170,7 +196,7 @@ const OllamaConversation = () => {
               size="sm"
               onClick={() => {
                 if (view === View.Conversation) {
-                  setView(View.Answers);
+                  setView(View.Questions);
                 } else {
                   setView(View.Conversation);
                 }
@@ -179,11 +205,12 @@ const OllamaConversation = () => {
             >
               {view === View.Conversation ? (
                 <>
-                  <MessageCircleQuestion className="mr-2 h-4 w-4" /> Questions
+                  <MessageCircleQuestion className="mr-2 h-4 w-4" />
+                  Conversation
                 </>
               ) : (
                 <>
-                  <TextQuote className="mr-2 h-4 w-4" /> Answers
+                  <TextQuote className="mr-2 h-4 w-4" /> Questions
                 </>
               )}
             </Button>
@@ -239,7 +266,7 @@ const OllamaConversation = () => {
           Level: {conversationData.level}
         </Badge>
         <Badge variant="outline" className="mb-2">
-          Speakers: {conversationData.num_speaker}
+          Speakers: {conversationData.num_speakers}
         </Badge>
         <Badge variant="outline" className="mb-2">
           Topic: {conversationData.topic}
@@ -250,7 +277,7 @@ const OllamaConversation = () => {
 };
 
 const _OllamaConversation = () => {
-  const [conversationData, loading, error] = useOllamaConversation(10);
+  const [conversationData, loading, error] = useOllamaConversation(7);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -288,13 +315,13 @@ const _OllamaConversation = () => {
         <div key={index}>
           <p>{question.question}</p>
           {question.options.map((option, optionIndex) => (
-            <p key={optionIndex}>{option.option}</p>
+            <p key={option._index}>{option.value}</p>
           ))}
         </div>
       ))}
 
       <p>Level: {conversationData.level}</p>
-      <p>Number of Speakers: {conversationData.num_speaker}</p>
+      <p>Number of Speakers: {conversationData.num_speakers}</p>
       <p>Topic: {conversationData.topic}</p>
 
       {/* Refresh Button */}

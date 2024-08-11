@@ -1,0 +1,11 @@
+---
+import Layout from '../layouts/Layout.astro';
+import '@/globals.css';
+import { CongratsCard } from '@/components/congrats.tsx'
+---
+
+<Layout title="Questions">
+<main class="py-80">
+  <CongratsCard score={7} totalQuestions={10} client:load/>
+	</main>
+</Layout>

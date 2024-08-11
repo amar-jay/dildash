@@ -20,6 +20,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useOllamaConversation, type Speaker } from "@/lib/requests";
 
 interface AudioPlayerProps {
   isTranscribing: boolean;
@@ -126,9 +127,9 @@ const AudioPlayer = ({
     </Card>
   );
 };
-function AudioTranscriptionTabs({ transcripts }: { transcripts: string }) {
+function AudioTranscriptionTabs({ transcripts }: { transcripts?: Speaker[] }) {
   return (
-    <Tabs defaultValue="transcript" className="w-full">
+    <Tabs defaultValue="transcript" className="w-full md:hidden">
       <TabsList className="grid w-full grid-cols-2">
         <TabsTrigger value="transcript">Transcript</TabsTrigger>
         <TabsTrigger value="notes">Notes</TabsTrigger>
@@ -148,7 +149,18 @@ function AudioTranscriptionTabs({ transcripts }: { transcripts: string }) {
             </div>
             <ScrollArea className="h-[300px] w-full rounded-md pr-4">
               <p className="text-sm text-gray-600 leading-relaxed">
-                {transcripts || (
+                {transcripts ? (
+                  transcripts.map((speaker, index) => (
+                    <div key={index} className="mb-2">
+                      {speaker.name.length > 0 && speaker.message.length > 0 ? (
+                        <>
+                          <span className="font-semibold">{speaker.name}:</span>{" "}
+                          {speaker.message}
+                        </>
+                      ) : null}
+                    </div>
+                  ))
+                ) : (
                   <span>
                     Your transcript will appear here as the audio plays...
                   </span>
@@ -172,9 +184,13 @@ function AudioTranscriptionTabs({ transcripts }: { transcripts: string }) {
   );
 }
 
-function AudioTranscriptionTabsSplit({ transcripts }: { transcripts: string }) {
+function AudioTranscriptionTabsSplit({
+  transcripts,
+}: {
+  transcripts?: Speaker[];
+}) {
   return (
-    <div defaultValue="transcript" className="w-full">
+    <div defaultValue="transcript" className="w-full hidden md:block">
       <h1 className="font-bold text-4xl text-center mb-5">Transcript</h1>
       <div className="grid grid-cols-2 gap-5">
         <Card className="shadow-md">
@@ -191,7 +207,18 @@ function AudioTranscriptionTabsSplit({ transcripts }: { transcripts: string }) {
             </div>
             <ScrollArea className="h-[300px] w-full rounded-md pr-4">
               <p className="text-sm text-gray-600 leading-relaxed">
-                {transcripts || (
+                {transcripts ? (
+                  transcripts.map((speaker, index) => (
+                    <div key={index} className="mb-2">
+                      {speaker.name.length > 0 && speaker.message.length > 0 ? (
+                        <>
+                          <span className="font-semibold">{speaker.name}:</span>{" "}
+                          {speaker.message}
+                        </>
+                      ) : null}
+                    </div>
+                  ))
+                ) : (
                   <span>
                     Your transcript will appear here as the audio plays...
                   </span>
@@ -251,7 +278,7 @@ function useAudioPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(70);
   const skipForward = () => {};
-  const [transcripts] = useState("Here are the transcripts");
+  const [conversationData, loading, error] = useOllamaConversation(7);
   const skipBack = () => {};
   const togglePlayPause = () => {};
 
@@ -261,9 +288,12 @@ function useAudioPlayer() {
       setTranscribing((prevState) => !prevState);
     }, 2000);
   };
+
   return {
     volume,
-    transcripts,
+    loading,
+    error,
+    transcripts: conversationData?.conversation,
     isTranscribing,
     setIsTranscribing,
     setVolume,
@@ -409,10 +439,11 @@ function AudioTranscriptionPage() {
   //const audioRef = useRef<HTMLAudioElement>(null);
   return (
     <TooltipProvider>
-      <div className="grid grid-cols-1 gap-6 w-[64rem]">
+      <div className="grid grid-cols-1 gap-6 w-[32rem] md:w-[64rem]">
         {isTranscribing ? (
           <>
             <AudioTranscriptionTabsSplit transcripts={transcripts} />
+            <AudioTranscriptionTabs transcripts={transcripts} />
             <FloatingAudioPlayer
               isTranscribing={isTranscribing}
               isPlaying={isPlaying}

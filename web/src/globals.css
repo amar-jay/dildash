@@ -127,3 +127,107 @@
   }
 }
 
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  70% {
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes scoreCount {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes trophyEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(50px) rotate(-180deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg);
+  }
+}
+@keyframes trophyBounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+@keyframes confetti {
+  0% {
+    transform: translateY(0) rotateZ(0deg);
+  }
+  100% {
+    transform: translateY(100vh) rotateZ(720deg);
+  }
+}
+.animate-popIn {
+  animation: popIn 0.6s cubic-bezier(0.26, 0.53, 0.74, 1.48) forwards;
+}
+.animate-fadeInUp {
+  animation: fadeInUp 0.8s ease-out forwards;
+}
+.animate-scoreCount {
+  animation: scoreCount 1.5s cubic-bezier(0.17, 0.67, 0.83, 0.67) forwards;
+}
+.animate-trophyEntrance {
+  animation: trophyEntrance 1s cubic-bezier(0.17, 0.67, 0.83, 0.67) forwards;
+}
+.animate-trophyBounce {
+  animation: trophyBounce 1s ease-in-out infinite;
+}
+.animate-confetti {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  animation: confetti 5s ease-in-out infinite;
+}
+.animate-spin {
+  animation: spin 4s linear infinite;
+}
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
