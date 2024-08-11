@@ -40,14 +40,15 @@ type Conversations {
 To get started:
 - Clone the repo
 - In two different terminal, in the repo's directory run:
-* web
+  
+ web
   ```
   # NOTE: you need to install bun to run this. visit https://bun.sh to download it
   cd web
   bun install
   bun run dev 
   ```
-* server
+ server
   ```
   # all you need is python
   cd server
