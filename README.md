@@ -4,6 +4,7 @@ The server:
   - Ollama (llama3)
 
 web:
+  - Bun
   - Astro (react)
   - Tailwind CSS
   - Shadcn UI
