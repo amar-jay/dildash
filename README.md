@@ -1,16 +1,16 @@
-The server:
+**server**:
   - Flask
   - Sqlite database
   - Ollama (llama3)
 
-web:
+**web**:
   - Bun
   - Astro (react)
   - Tailwind CSS
   - Shadcn UI
 
 
-Database Structure
+### Database Structure
 
 ```graphql
 type Option {
