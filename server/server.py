@@ -3,24 +3,16 @@
 """
 
 from flask import Flask, request, jsonify
+from flask.wrappers import json
 from flask_cors import CORS
-from ollama import generate_conversation_and_questions
+from ollama import generate_conversation_and_questions, parse_questions
+from db import DB_NAME, add_conversation, get_all_conversations
 import sqlite3
+
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 
-def save_to_database(num_speaker, level, topic, conversation, questions):
-    conn = sqlite3.connect('dildash.db')
-    cursor = conn.cursor()
-
-    cursor.execute('''
-    INSERT INTO conversations (num_speaker, level, topic, conversation, questions)
-    VALUES (?, ?, ?, ?, ?)
-    ''', (num_speaker, level, topic, conversation, questions))
-
-    conn.commit()
-    conn.close()
 
 @app.route('/generate', methods=['GET'])
 def generate():
@@ -29,19 +21,24 @@ def generate():
     params: num_speaker (int), level (int)
     """
 
-    num_speaker = request.args.get('num_speaker', default=2, type=int) # ?num_speaker=2
-    level = request.args.get('level', default=1, type=int) # ?level=1
+    num_speakers = request.args.get('num_speakers', default=2, type=int) # ?num_speaker=2
+    level_idx = request.args.get('level', default=1, type=int) # ?level=1
+    length = request.args.get('length', default=10, type=int)
+    num_questions = request.args.get('num_questions', default=5, type=int)
 
-    if num_speaker< 0 or num_speaker> 3:
+    if num_speakers< 0 or num_speakers> 3:
         return jsonify({"error": "Invalid number of speakers. Choose 1, 2, or 3."}), 400
 
-    if level < 0 or level > 3:
+    if level_idx < 0 or level_idx > 3:
         return jsonify({"error": "Invalid level. Choose a level between 1 and 4."}), 400
 
-    topic, conversation, questions = generate_conversation_and_questions(num_speaker, level)
+    topic, conversation, questions = generate_conversation_and_questions(num_speakers, num_questions, level_idx, length)
 
+    parsed_questions = parse_questions(questions)
+    conn = sqlite3.connect(DB_NAME)
     # Save the generated data to the database
-    save_to_database(num_speaker, level, topic, conversation, questions)
+    add_conversation(conn, num_speakers, level_idx, topic, conversation, parsed_questions)
+    conn.close()
 
     return jsonify({
         "conversation": conversation,
@@ -51,13 +48,21 @@ def generate():
 
 @app.route('/conversations/add_random', methods=['GET'])
 def add_random_conversation():
-    num_speaker = 2
+    num_speakers = 2
     level = 1
     topic = "Science"
-    conversation = "Jamie: No, what happened?\nAlex: Scientists at CERN discovered a new type of subatomic particle that could change our understanding of the fundamental forces of the universe.\nJamie: That's incredible! What exactly did they find?\nAlex: They found evidence of a particle called a tetraquark. Unlike regular particles made of three quarks, this one is made of four."
-    questions = "Jamie: What did scientists at CERN discover?\nJamie: What could the new subatomic particle change?\nJamie: What is the new subatomic particle called?\nJamie: How many quarks does the new particle have?\nJamie: How many quarks do regular particles have?"
+    with open('sample.txt', 'r') as f:
+        text = f.read()
+        no_head_text = text.split("CONVERSATIONS:\n")[1] # removed heading
+        conversation, questions = no_head_text.split("QUESTIONS:\n")
+        parsed_questions = json.loads(questions.strip())
+    conversation = conversation.strip()
 
-    save_to_database(num_speaker, level, topic, conversation, questions)
+    conn = sqlite3.connect(DB_NAME)
+
+    # Save the generated data to the database
+    add_conversation(conn, num_speakers, level, topic, conversation, parsed_questions)
+    conn.close()
     return jsonify({
         "conversation": conversation,
         "questions": questions
@@ -87,26 +92,9 @@ def get_conversation(conversation_id):
 
 
 @app.route('/conversations', methods=['GET'])
-def get_all_conversations():
+def get_conversations():
     conn = sqlite3.connect('dildash.db')
-    cursor = conn.cursor()
-
-    cursor.execute('SELECT id, num_speaker, level, topic, conversation, questions FROM conversations')
-    rows = cursor.fetchall()
-
-    # Convert rows to a list of dictionaries
-    conversations = [
-        {
-            "id": row[0],
-            "num_speaker": row[1],
-            "level": row[2],
-            "topic": row[3],
-            "conversation": row[4],
-            "questions": row[5]
-        }
-        for row in rows
-    ]
-
+    conversations = get_all_conversations(conn)
     conn.close()
 
     return jsonify(conversations)

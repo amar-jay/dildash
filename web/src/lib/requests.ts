@@ -81,6 +81,36 @@ export async function getConversation(
         };
       });
 
+    const formattedAnwers: Question[] = data.questions
+      .split("\n\n")
+      .filter((section: string) => section.trim())
+      .map((section: string) => {
+        const lines = section.split("\n");
+        const questionText = lines.shift()!.trim();
+        const optionsTexts = lines.map((line) => line.trim());
+
+        const options = optionsTexts.map((optionText, index) => ({
+          option: optionText.replace(/^[a-z]$$/i, ""),
+          correct:
+            index === optionsTexts.length - 1 && optionText.includes("Answer:"),
+        }));
+
+        const answer =
+          optionsTexts
+            .filter(
+              (optionText, index) =>
+                optionsTexts.length - 1 === index &&
+                optionText.includes("Answer:"),
+            )[0]
+            ?.replace("Answer: ", "") ?? "No answer found";
+
+        return {
+          question: questionText,
+          options,
+          answer: { value: answer, index: null },
+        };
+      });
+
     // Return formatted data with correct types
     return {
       conversation: formattedConversation,
