@@ -1,16 +1,13 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import Card from '../components/Card.astro';
 import MainPageCard from '@/components/mainCard.tsx';
-import AudioCard from '@/components/audioCard2.tsx';
+import OllamaConversation from '@/components/conversation.tsx';
 import '@/globals.css';
 ---
 
 <Layout title="Welcome to Astro.">
-<main>
-    <div class="h-10 "/>
-    <MainPageCard client:load/>
-    <div class="h-10"/>
+<main class="py-80">
+    <OllamaConversation client:load/>
 	</main>
 </Layout>
 

@@ -86,14 +86,11 @@ const AudioPlayer = ({
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Need premium to use this</p>
-                  {/*
-                    <p>Skip back 10 seconds</p>
-                    */}
+                  <p>Skip back 10 seconds</p>
                 </TooltipContent>
               </Tooltip>
               <Button
-                variant="outline"
+                variant="default"
                 size="icon"
                 className="rounded-full"
                 onClick={togglePlayPause}
@@ -110,16 +107,12 @@ const AudioPlayer = ({
                     variant="outline"
                     size="icon"
                     className="rounded-full"
-                    disabled
                   >
                     <SkipForwardIcon className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Need premium to use this</p>
-                  {/*
-                    <p>Skip forward 10 seconds</p>
-                    */}
+                  <p>Skip forward 10 seconds</p>
                 </TooltipContent>
               </Tooltip>
             </div>
@@ -235,8 +228,9 @@ function SimpleAudioPlayer({
         <SkipBackIcon />
       </Button>
       <Button
-        variant="ghost"
+        variant="default"
         onClick={togglePlayPause}
+        className="rounded-full"
         aria-label={isPlaying ? "Pause" : "Play"}
       >
         {isPlaying ? <Pause /> : <Play />}
@@ -298,7 +292,12 @@ const FloatingAudioPlayer = ({
       <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 rounded-full shadow-sm p-2 flex items-center space-x-2 border-primary border-2">
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon" onClick={skipBack}>
+            <Button
+              variant="outline"
+              className="rounded-full"
+              size="icon"
+              onClick={skipBack}
+            >
               <SkipBackIcon className="h-4 w-4" />
             </Button>
           </TooltipTrigger>
@@ -309,7 +308,12 @@ const FloatingAudioPlayer = ({
 
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon" onClick={togglePlayPause}>
+            <Button
+              variant="default"
+              size="icon"
+              className="rounded-full"
+              onClick={togglePlayPause}
+            >
               {isPlaying ? (
                 <Pause className="h-4 w-4" />
               ) : (
@@ -324,7 +328,12 @@ const FloatingAudioPlayer = ({
 
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="ghost" size="icon" onClick={skipForward}>
+            <Button
+              variant="outline"
+              className="rounded-full"
+              size="icon"
+              onClick={skipForward}
+            >
               <SkipForwardIcon className="h-4 w-4" />
             </Button>
           </TooltipTrigger>
@@ -341,6 +350,7 @@ const FloatingAudioPlayer = ({
               variant={"ghost"}
               onClick={() => setIsTranscribing(false)}
               id="transcription-mode"
+              className="rounded-full"
             >
               <TranscriptionIcon className="h-4 w-4" />
             </Button>
@@ -356,6 +366,7 @@ const FloatingAudioPlayer = ({
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsVolumeVisible(!isVolumeVisible)}
+                className="rounded-full"
               >
                 <Volume2 className="h-4 w-4" />
               </Button>
