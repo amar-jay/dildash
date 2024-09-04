@@ -8,13 +8,17 @@ import {
 import { Button } from "@/components/ui/button";
 import { Trophy, Star, Sparkles } from "lucide-react";
 
-export const CongratsCard = ({ score, totalQuestions }) => {
+interface CongratsCardProps {
+  score: number;
+  totalQuestions: number;
+}
+export const CongratsCard = ({ score, totalQuestions }: CongratsCardProps) => {
   const percentage = Math.round((score / totalQuestions) * 100);
 
   return (
     <div>
       <Confetti />
-      <Card className={`w-full max-w-md text-center relative`}>
+      <Card className={`w-full max-w-lg text-center relative`}>
         <CardHeader>
           <CardTitle className="text-3xl font-bold mb-2 animate-popIn">
             Congratulations!
