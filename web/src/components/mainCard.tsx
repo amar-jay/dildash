@@ -2,6 +2,7 @@ import { Icons } from "@/components/icons";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { quizThemes } from "@/lib/quiz-config";
 import {
   Card,
   CardContent,
@@ -96,6 +97,10 @@ export default function MainPageCard() {
 }
 
 function MainCard() {
+  const [level, setLevel] = useState("intermediate");
+  const [name, setName] = useState("");
+  const [tone, setTone] = useState("");
+  const [theme, setTheme] = useState("");
   return (
     <Card>
       <CardHeader>
@@ -105,31 +110,35 @@ function MainCard() {
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-6">
-        <RadioGroup defaultValue="card" className="grid grid-cols-3 gap-4">
+        <RadioGroup
+          onValueChange={(v) => setLevel(v)}
+          defaultValue={level}
+          className="grid grid-cols-3 gap-4"
+        >
           <div>
             <RadioGroupItem
-              value="card"
-              id="card"
+              value="beginner"
+              id="beginner"
               className="peer sr-only"
-              aria-label="Card"
+              aria-label="beginner"
             />
             <Label
-              htmlFor="card"
+              htmlFor="beginner"
               className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-transparent p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
             >
-              <Icons.level_beginner className="mb-3 h-6 w-6" />
               Beginner
+              <Icons.level_beginner className="mb-3 h-6 w-6" />
             </Label>
           </div>
           <div>
             <RadioGroupItem
-              value="paypal"
-              id="paypal"
+              value="intermediate"
+              id="intermediate"
               className="peer sr-only"
-              aria-label="Paypal"
+              aria-label="intermediate"
             />
             <Label
-              htmlFor="paypal"
+              htmlFor="intermediate"
               className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-transparent p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
             >
               <Icons.level_intermediate className="mb-3 h-6 w-6" />
@@ -138,13 +147,13 @@ function MainCard() {
           </div>
           <div>
             <RadioGroupItem
-              value="apple"
-              id="apple"
+              value="advanced"
+              id="advanced"
               className="peer sr-only"
-              aria-label="Apple"
+              aria-label="advanced"
             />
             <Label
-              htmlFor="apple"
+              htmlFor="advanced"
               className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-transparent p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary "
             >
               <Icons.level_advanced className="mb-3 h-6 w-6" />
@@ -154,53 +163,39 @@ function MainCard() {
         </RadioGroup>
         <div className="gap-2">
           <Label htmlFor="name">Name</Label>
-          <Input id="name" placeholder="First Last" />
+          <Input
+            id="name"
+            placeholder="First Last"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
         </div>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           <div className="grid gap-2">
             <Label htmlFor="tone">Tone</Label>
-            <Select>
+            <Select onValueChange={(v) => setTone(v)} defaultValue={tone}>
               <SelectTrigger id="tone" aria-label="Tone">
                 <SelectValue placeholder="Tone" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="1">Child</SelectItem>
-                <SelectItem value="2">Adult</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid gap-2">
-            <Label htmlFor="year">Year</Label>
-            <Select>
-              <SelectTrigger id="year" aria-label="Year">
-                <SelectValue placeholder="Year" />
-              </SelectTrigger>
-              <SelectContent>
-                {Array.from({ length: 10 }, (_, i) => (
-                  <SelectItem key={i} value={`${new Date().getFullYear() + i}`}>
-                    {new Date().getFullYear() + i}
-                  </SelectItem>
-                ))}
+                <SelectItem value="child">Child</SelectItem>
+                <SelectItem value="adult">Adult</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="grid gap-2">
             <Label htmlFor="month">Theme</Label>
-            <Select>
+            <Select onValueChange={(v) => setTheme(v)} defaultValue={theme}>
               <SelectTrigger id="Theme" aria-label="Theme">
                 <SelectValue placeholder="Theme" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="1">Sports</SelectItem>
-                <SelectItem value="2">Academics</SelectItem>
-                <SelectItem value="3">Hospital</SelectItem>
-                <SelectItem value="4">Food</SelectItem>
-                <SelectItem value="5">Tourism</SelectItem>
-                <SelectItem value="6">Politics</SelectItem>
-                <SelectItem value="7">Global News</SelectItem>
-                <SelectItem value="8">Family</SelectItem>
-                <SelectItem value="9">Love Life</SelectItem>
+                {quizThemes.map((theme, i) => (
+                  <SelectItem key={i} value={theme.toLowerCase()}>
+                    {theme}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -212,7 +207,9 @@ function MainCard() {
         </div>
       </CardContent>
       <CardFooter>
-        <a href="/player">
+        <a
+          href={`/player?theme=${theme}&tone=${tone}&level=${level}&name=${name}`}
+        >
           <Button className="w-full">Continue</Button>
         </a>
       </CardFooter>

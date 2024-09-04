@@ -2,12 +2,18 @@
 import Layout from '../layouts/Layout.astro';
 import AudioCard from '@/components/audioCard2.tsx';
 import '@/globals.css';
+
+const audioUrl='/audio/demo.mp3'
+//const theme = Astro.url.searchParams.get('theme') || '';
+//const tone = Astro.url.searchParams.get('tone') || '';
+//const level = Astro.url.searchParams.get('level') || '';
+const name = Astro.url.searchParams.get('name') || '';
 ---
 
 <Layout title="Welcome to Astro.">
 <main>
     <div class="h-10 "/>
-    <AudioCard client:load/>
+    <AudioCard  name={name} audioUrl={audioUrl} client:load/>
     <div class="h-10"/>
 	</main>
 </Layout>

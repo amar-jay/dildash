@@ -1,18 +1,55 @@
 ---
+import { SEO } from "astro-seo"
+import {seoConfig} from "@/lib/seo"
+
 interface Props {
 	title: string;
+	ogTitle?: string
+	description?: string
+  	/** Image thumbnail for the page. */
+	image?: {
+		url: string
+		alt: string
+	}
+  disableIndexing?: boolean
 }
 
-const { title } = Astro.props;
+const {description, disableIndexing, image, ogTitle, title } = Astro.props;
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
+    <SEO
+			title={title}
+			description={seoConfig.description || description}
+			noindex={disableIndexing}
+			nofollow={disableIndexing}
+			openGraph={{
+				basic: {
+					title: ogTitle || title,
+					type: "website",
+					image: seoConfig.image.url || image?.url
+				},
+				image: {
+					width: seoConfig.image.width,
+					height: seoConfig.image.height,
+					alt: seoConfig.image.alt || image?.alt
+				},
+				optional: {
+					siteName: seoConfig.siteName,
+					description: seoConfig.description || description
+				}
+			}}
+			twitter={{
+				card: seoConfig.twitter.card
+			}}
+    />
+
 		<meta charset="UTF-8" />
 		<meta name="description" content="Astro description" />
 		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/images/dildash-128.ico" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 	</head>

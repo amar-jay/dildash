@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Play,
   Pause,
@@ -31,6 +31,9 @@ interface AudioPlayerProps {
   skipBack: () => void;
   skipForward: () => void;
   togglePlayPause: () => void;
+  currentTime: number;
+  audioDuration: number;
+  handleSeek: (value: number[]) => void;
 }
 
 const AudioPlayer = ({
@@ -279,9 +282,21 @@ function useAudioPlayer() {
   const [volume, setVolume] = useState(70);
   const skipForward = () => {};
   const [conversationData, loading, error] = useOllamaConversation(7);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
   const skipBack = () => {};
-  const togglePlayPause = () => {};
+  const togglePlayPause = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (isPlaying) {
+      audio.pause();
+    } else {
+      audio.play();
+    }
+    setIsPlaying(!isPlaying);
+  };
 
+  const audioRef = useRef<HTMLAudioElement>(null);
   const setIsTranscribing = (value: boolean) => {
     // transcription delay simulation
     setTimeout(() => {
@@ -289,12 +304,48 @@ function useAudioPlayer() {
     }, 2000);
   };
 
+  const handleTimeUpdate = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    setCurrentTime(audio.currentTime);
+  };
+
+  /*
+  const handleLoadedMetadata = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    setDuration(audio.duration);
+  };
+  */
+
+  const handleSeek = (value: number[]) => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.currentTime = value[0];
+    setCurrentTime(value[0]);
+  };
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      audio.addEventListener("timeupdate", handleTimeUpdate);
+      audio.addEventListener("loadedmetadata", () => {
+        setDuration(audio.duration);
+      });
+      return () => {
+        audio.removeEventListener("timeupdate", handleTimeUpdate);
+      };
+    }
+  }, []);
+
   return {
     volume,
     loading,
     error,
     transcripts: conversationData?.conversation,
     isTranscribing,
+    currentTime,
+    duration,
     setIsTranscribing,
     setVolume,
     skipBack,
@@ -302,6 +353,10 @@ function useAudioPlayer() {
     togglePlayPause,
     isPlaying,
     setIsPlaying,
+    audioRef,
+    //handleLoadedMetadata,
+    //handleTimeUpdate,
+    handleSeek,
   };
 }
 
@@ -314,6 +369,9 @@ const FloatingAudioPlayer = ({
   isTranscribing,
   setIsTranscribing,
   setVolume,
+  currentTime,
+  audioDuration: duration,
+  handleSeek,
 }: AudioPlayerProps) => {
   const [isVolumeVisible, setIsVolumeVisible] = useState(false);
 
@@ -372,7 +430,13 @@ const FloatingAudioPlayer = ({
           </TooltipContent>
         </Tooltip>
 
-        <Slider className="w-48" max={100} step={1} />
+        <Slider
+          value={[currentTime]}
+          max={duration}
+          step={0.1}
+          onValueChange={handleSeek}
+          className="w-48"
+        />
 
         <Tooltip>
           <TooltipTrigger asChild>
@@ -424,8 +488,16 @@ const FloatingAudioPlayer = ({
   );
 };
 
-function AudioTranscriptionPage() {
+interface AudioPageProps {
+  name: string;
+  audioUrl: string;
+}
+export default function AudioTranscriptionPage({
+  name,
+  audioUrl,
+}: AudioPageProps) {
   const {
+    audioRef,
     isTranscribing,
     isPlaying,
     volume,
@@ -435,8 +507,10 @@ function AudioTranscriptionPage() {
     skipBack,
     skipForward,
     togglePlayPause,
+    handleSeek,
+    duration,
+    currentTime,
   } = useAudioPlayer();
-  //const audioRef = useRef<HTMLAudioElement>(null);
   return (
     <TooltipProvider>
       <div className="grid grid-cols-1 gap-6 w-[32rem] md:w-[64rem]">
@@ -447,11 +521,14 @@ function AudioTranscriptionPage() {
             <FloatingAudioPlayer
               isTranscribing={isTranscribing}
               isPlaying={isPlaying}
+              audioDuration={duration}
+              currentTime={currentTime}
+              volume={volume}
+              handleSeek={handleSeek}
               setIsTranscribing={setIsTranscribing}
               skipForward={skipForward}
               skipBack={skipBack}
               togglePlayPause={togglePlayPause}
-              volume={volume}
               setVolume={setVolume}
             />
           </>
@@ -459,21 +536,28 @@ function AudioTranscriptionPage() {
           <AudioPlayer
             isTranscribing={isTranscribing}
             isPlaying={isPlaying}
+            audioDuration={duration}
+            currentTime={currentTime}
+            volume={volume}
+            handleSeek={handleSeek}
             setIsTranscribing={setIsTranscribing}
             skipForward={skipForward}
             skipBack={skipBack}
             togglePlayPause={togglePlayPause}
-            volume={volume}
             setVolume={setVolume}
           />
         )}
         {/*
          */}
+        <audio
+          ref={audioRef}
+          src={audioUrl}
+          //onLoadedMetadata={handleLoadedMetadata}
+          // onTimeUpdate={handleTimeUpdate} changed it to handle it in a useEffect
+        />
         {/*
-      <audio ref={audioRef} src="path/to/your/audio/file.mp3" />
-        */}
+         */}
       </div>
     </TooltipProvider>
   );
 }
-export default AudioTranscriptionPage;
