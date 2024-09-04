@@ -10,7 +10,7 @@ const audioUrl='/audio/demo.mp3'
 const name = Astro.url.searchParams.get('name') || '';
 ---
 
-<Layout title="Welcome to Astro.">
+<Layout title="Audio Player | Dildash.">
 <main>
     <div class="h-10 "/>
     <AudioCard  name={name} audioUrl={audioUrl} client:load/>

@@ -280,11 +280,23 @@ function useAudioPlayer() {
   const [isTranscribing, setTranscribing] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(70);
-  const skipForward = () => {};
+
   const [conversationData, loading, error] = useOllamaConversation(7);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const skipBack = () => {};
+
+  const skipForward = () => {
+    // skip 10 seconds forward
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.currentTime += 10;
+  };
+
+  const skipBack = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    audio.currentTime -= 10;
+  };
   const togglePlayPause = () => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -305,18 +317,18 @@ function useAudioPlayer() {
   };
 
   const handleTimeUpdate = () => {
+    // throttle this function
+
     const audio = audioRef.current;
     if (!audio) return;
     setCurrentTime(audio.currentTime);
   };
 
-  /*
   const handleLoadedMetadata = () => {
     const audio = audioRef.current;
     if (!audio) return;
     setDuration(audio.duration);
   };
-  */
 
   const handleSeek = (value: number[]) => {
     const audio = audioRef.current;
@@ -326,18 +338,8 @@ function useAudioPlayer() {
   };
 
   useEffect(() => {
-    const audio = audioRef.current;
-    if (audio) {
-      audio.addEventListener("timeupdate", handleTimeUpdate);
-      audio.addEventListener("loadedmetadata", () => {
-        setDuration(audio.duration);
-      });
-      return () => {
-        audio.removeEventListener("timeupdate", handleTimeUpdate);
-      };
-    }
-  }, []);
-
+    setDuration(audioRef.current?.duration || 0);
+  }, [audioRef.current]);
   return {
     volume,
     loading,
@@ -354,8 +356,8 @@ function useAudioPlayer() {
     isPlaying,
     setIsPlaying,
     audioRef,
-    //handleLoadedMetadata,
-    //handleTimeUpdate,
+    handleLoadedMetadata,
+    handleTimeUpdate,
     handleSeek,
   };
 }
@@ -510,6 +512,8 @@ export default function AudioTranscriptionPage({
     handleSeek,
     duration,
     currentTime,
+    handleLoadedMetadata,
+    handleTimeUpdate,
   } = useAudioPlayer();
   return (
     <TooltipProvider>
@@ -552,8 +556,8 @@ export default function AudioTranscriptionPage({
         <audio
           ref={audioRef}
           src={audioUrl}
-          //onLoadedMetadata={handleLoadedMetadata}
-          // onTimeUpdate={handleTimeUpdate} changed it to handle it in a useEffect
+          onLoadedMetadata={handleLoadedMetadata}
+          onTimeUpdate={handleTimeUpdate} // changed it to handle it in a useEffect
         />
         {/*
          */}
