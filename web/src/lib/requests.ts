@@ -28,16 +28,16 @@ export interface ConversationResponse {
   topic: string;
 }
 
+const URL = "http://172.31.173.220:5000";
 const urls = {
-  getConversation: (id: number) =>
-    `http://172.20.10.2:5000/conversations/${id}`,
+  getConversation: (id?: number) => `${URL}/conversations/${id}`,
   generateConversation: (
     level?: number,
     length?: number,
     num_speakers?: number,
     num_questions?: number,
   ) =>
-    `http://172.20.10.2:5000/generate?level=${level}&length=${length}&num_speakers=${num_speakers}&num_questions=${num_questions}`,
+    `${URL}/generate?level=${level}&length=${length}&num_speakers=${num_speakers}&num_questions=${num_questions}`,
 } as const;
 
 export async function getConversation(

@@ -18,6 +18,7 @@ export default defineConfig({
     sitemap(),
     compress(),
   ],
+  output: "server",
   vite: {
     plugins: [
       VitePWA({

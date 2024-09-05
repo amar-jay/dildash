@@ -21,6 +21,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useOllamaConversation, type Speaker } from "@/lib/requests";
+import { formatTime } from "@/lib/utils";
 
 interface AudioPlayerProps {
   isTranscribing: boolean;
@@ -40,9 +41,14 @@ const AudioPlayer = ({
   isPlaying,
   setIsTranscribing,
   togglePlayPause,
+  currentTime,
+  audioDuration: duration,
+  skipBack,
+  skipForward,
+  handleSeek,
 }: AudioPlayerProps) => {
   return (
-    <Card className="shadow-lg">
+    <Card className="w-full max-w-lg mx-auto shadow-lg">
       <CardContent className="p-6">
         <div className="space-y-4">
           {/* Audio Title and Transcription Toggle */}
@@ -69,10 +75,16 @@ const AudioPlayer = ({
 
           {/* Progress Bar */}
           <div className="space-y-2">
-            <Slider defaultValue={[0]} max={100} step={1} className="w-full" />
+            <Slider
+              value={[currentTime]}
+              max={duration}
+              step={0.1}
+              onValueChange={handleSeek}
+              className="w-full"
+            />
             <div className="flex justify-between text-sm text-gray-500">
-              <span>0:00</span>
-              <span>3:45</span>
+              <span>{formatTime(currentTime)}</span>
+              <span>{formatTime(duration)}</span>
             </div>
           </div>
 
@@ -85,6 +97,7 @@ const AudioPlayer = ({
                     variant="outline"
                     size="icon"
                     className="rounded-full"
+                    onClick={skipBack}
                   >
                     <SkipBackIcon className="h-4 w-4" />
                   </Button>
@@ -111,6 +124,7 @@ const AudioPlayer = ({
                     variant="outline"
                     size="icon"
                     className="rounded-full"
+                    onClick={skipForward}
                   >
                     <SkipForwardIcon className="h-4 w-4" />
                   </Button>
@@ -242,6 +256,7 @@ function AudioTranscriptionTabsSplit({
     </div>
   );
 }
+/*
 function SimpleAudioPlayer({
   skipBack,
   skipForward,
@@ -276,6 +291,7 @@ function SimpleAudioPlayer({
   );
 }
 
+*/
 function useAudioPlayer() {
   const [isTranscribing, setTranscribing] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -309,7 +325,7 @@ function useAudioPlayer() {
   };
 
   const audioRef = useRef<HTMLAudioElement>(null);
-  const setIsTranscribing = (value: boolean) => {
+  const setIsTranscribing = (_: boolean) => {
     // transcription delay simulation
     setTimeout(() => {
       setTranscribing((prevState) => !prevState);
@@ -368,7 +384,6 @@ const FloatingAudioPlayer = ({
   togglePlayPause,
   isPlaying,
   volume,
-  isTranscribing,
   setIsTranscribing,
   setVolume,
   currentTime,
@@ -471,6 +486,13 @@ const FloatingAudioPlayer = ({
               <p>Adjust Volume</p>
             </TooltipContent>
           </Tooltip>
+          {duration != 0 && duration - currentTime < 50 && (
+            <div className="absolute bottom-full mb-0 sm:ml-12 md:ml-24 lg:ml-36 px-1 py-1 bg-white left-1/2 transform -translate-x-1/2 rounded-lg border-2 ">
+              <Button>
+                <a href={`/questions`}>Go to Questions</a>
+              </Button>
+            </div>
+          )}
 
           {isVolumeVisible && (
             <div className="absolute bottom-full mb-2 px-2 py-2 bg-white left-1/2 transform -translate-x-1/2 rounded-lg border-2 ">
@@ -495,7 +517,7 @@ interface AudioPageProps {
   audioUrl: string;
 }
 export default function AudioTranscriptionPage({
-  name,
+  //name,
   audioUrl,
 }: AudioPageProps) {
   const {

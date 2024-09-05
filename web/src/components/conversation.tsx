@@ -26,16 +26,22 @@ import { cn } from "@/lib/utils";
 const QuestionComponent = ({
   question,
   onAnswer,
+  isAnswered,
+  setIsAnswered,
 }: {
   question: Question;
   onAnswer: () => void;
+  isAnswered: boolean;
+  setIsAnswered: (value: boolean) => void;
 }) => {
   const [selectedOption, setSelectedOption] = useState<string>();
-  const [isAnswered, setIsAnswered] = useState(false);
 
   const handleSubmit = () => {
     if (selectedOption !== "") {
       setIsAnswered(true);
+      if (question.correct._index.toString() === selectedOption) {
+        onAnswer();
+      }
       //     onAnswer(selectedOption);
     }
   };
@@ -103,28 +109,44 @@ const QuestionComponent = ({
 
 const QuestionsSection = ({ questions }: { questions: Question[] }) => {
   const [answeredQuestions, setAnsweredQuestions] = useState(0);
+  const [score, setScore] = useState(0);
+  const [isAnswered, setIsAnswered] = useState(false);
 
   const handleAnswer = () => {
     setAnsweredQuestions((prev) => (prev < questions.length ? prev + 1 : 0));
   };
+
+  const incrementScore = () => setScore((prev) => prev + 1);
 
   return (
     <div>
       <h3 className="text-lg font-semibold mb-2">
         ({answeredQuestions}/{questions.length} answered)
       </h3>
-      <QuestionComponent
-        question={questions[answeredQuestions]}
-        onAnswer={handleAnswer}
-      />
-      <Separator />
-      <Button
-        onClick={handleAnswer}
-        disabled={answeredQuestions === questions.length - 1}
-        className="my-5 w-full"
-      >
-        Next Question <ArrowRight className="ml-5 h-4 w-4" />
-      </Button>
+      {answeredQuestions !== questions.length ? (
+        <>
+          <QuestionComponent
+            question={questions[answeredQuestions]}
+            onAnswer={incrementScore}
+            isAnswered={isAnswered}
+            setIsAnswered={setIsAnswered}
+          />
+          <Separator />
+          <Button
+            onClick={handleAnswer}
+            disabled={!isAnswered}
+            className="my-5 w-full"
+          >
+            Next Question <ArrowRight className="ml-5 h-4 w-4" />
+          </Button>
+        </>
+      ) : (
+        <a href={`/congrats?score=${score}&totalQuestions=${questions.length}`}>
+          <Button className="my-5 w-full">
+            Finish Quiz <ArrowRight className="ml-5 h-4 w-4" />
+          </Button>
+        </a>
+      )}
     </div>
   );
 };
@@ -276,6 +298,7 @@ const OllamaConversation = () => {
   );
 };
 
+/*
 const _OllamaConversation = () => {
   const [conversationData, loading, error] = useOllamaConversation(7);
 
@@ -314,7 +337,7 @@ const _OllamaConversation = () => {
       {conversationData.questions.map((question, index) => (
         <div key={index}>
           <p>{question.question}</p>
-          {question.options.map((option, optionIndex) => (
+          {question.options.map((option, _) => (
             <p key={option._index}>{option.value}</p>
           ))}
         </div>
@@ -324,10 +347,11 @@ const _OllamaConversation = () => {
       <p>Number of Speakers: {conversationData.num_speakers}</p>
       <p>Topic: {conversationData.topic}</p>
 
-      {/* Refresh Button */}
+      {// Refresh Button }
       <button onClick={refreshData}>Refresh Data</button>
     </div>
   );
 };
+*/
 
 export default OllamaConversation;

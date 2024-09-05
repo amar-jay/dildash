@@ -9,63 +9,67 @@ import { Button } from "@/components/ui/button";
 import { Trophy, Star, Sparkles } from "lucide-react";
 
 interface CongratsCardProps {
-  score: number;
-  totalQuestions: number;
+  score: string;
+  totalQuestions: string;
 }
-export const CongratsCard = ({ score, totalQuestions }: CongratsCardProps) => {
+export const CongratsCard = ({
+  score: _score,
+  totalQuestions: _totalQuestions,
+}: CongratsCardProps) => {
+  const score = parseInt(_score, 10);
+  const totalQuestions = parseInt(_totalQuestions, 10);
   const percentage = Math.round((score / totalQuestions) * 100);
 
   return (
-    <div>
-      <Confetti />
-      <Card className={`w-full max-w-lg text-center relative`}>
-        <CardHeader>
-          <CardTitle className="text-3xl font-bold mb-2 animate-popIn">
-            Congratulations!
-          </CardTitle>
-          <CardDescription className="animate-fadeInUp">
-            You've completed the quiz!
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className={`text-6xl font-bold mb-4 animate-scoreCount : ""}`}>
-            {score}/{totalQuestions}
-          </div>
-          <div className="text-2xl mb-6 animate-fadeInUp delay-300">
-            Your score: {percentage}%
-          </div>
-          <div className="relative mb-6">
-            <div className="animate-trophyEntrance">
-              <Trophy
-                className="mx-auto text-yellow-500 animate-trophyBounce"
-                size={64}
-              />
-            </div>
-            <Star
-              className="absolute top-0 left-1/4 text-yellow-300 animate-spin"
-              size={24}
-            />
-            <Star
-              className="absolute bottom-0 right-1/4 text-yellow-300 animate-spin"
-              size={24}
-            />
-            <Sparkles
-              className="absolute top-1/2 left-0 text-yellow-200 animate-pulse"
-              size={24}
-            />
-            <Sparkles
-              className="absolute top-1/2 right-0 text-yellow-200 animate-pulse"
-              size={24}
+    <Card className={`w-full max-w-lg text-center relative shadow-lg`}>
+      <CardHeader>
+        <CardTitle className="text-3xl font-bold mb-2 animate-popIn">
+          Congratulations!
+        </CardTitle>
+        <CardDescription className="animate-fadeInUp">
+          You've completed the quiz!
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className={`text-6xl font-bold mb-4 animate-scoreCount : ""}`}>
+          {score}/{totalQuestions}
+        </div>
+        <div className="text-2xl mb-6 animate-fadeInUp delay-300">
+          Your score: {percentage}%
+        </div>
+        <div className="relative mb-6">
+          <div className="animate-trophyEntrance">
+            <Trophy
+              className="mx-auto text-yellow-500 animate-trophyBounce"
+              size={64}
             />
           </div>
+          <Star
+            className="absolute top-0 left-1/4 text-yellow-300 animate-spin"
+            size={24}
+          />
+          <Star
+            className="absolute bottom-0 right-1/4 text-yellow-300 animate-spin"
+            size={24}
+          />
+          <Sparkles
+            className="absolute top-1/2 left-0 text-yellow-200 animate-pulse"
+            size={24}
+          />
+          <Sparkles
+            className="absolute top-1/2 right-0 text-yellow-200 animate-pulse"
+            size={24}
+          />
+        </div>
+        <a href="/">
           <Button className="w-full">Try Again</Button>
-        </CardContent>
-      </Card>
-    </div>
+        </a>
+      </CardContent>
+    </Card>
   );
 };
 
-const Confetti = () => {
+export const Confetti = () => {
   return (
     <div className="fixed inset-0 pointer-events-none">
       {[...Array(50)].map((_, index) => (

@@ -1,5 +1,5 @@
 ---
-import { SEO } from "astro-seo"
+import { SEO, type TwitterCardType } from "astro-seo"
 import {seoConfig} from "@/lib/seo"
 
 interface Props {
@@ -29,7 +29,7 @@ const {description, disableIndexing, image, ogTitle, title } = Astro.props;
 				basic: {
 					title: ogTitle || title,
 					type: "website",
-					image: seoConfig.image.url || image?.url
+					image: seoConfig.image.url || image?.url || ""
 				},
 				image: {
 					width: seoConfig.image.width,
@@ -42,7 +42,7 @@ const {description, disableIndexing, image, ogTitle, title } = Astro.props;
 				}
 			}}
 			twitter={{
-				card: seoConfig.twitter.card
+				card: seoConfig.twitter.card as TwitterCardType,
 			}}
     />
 
