@@ -1,5 +1,5 @@
 import { Icons } from "@/components/icons";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { quizThemes } from "@/lib/quiz-config";
@@ -76,7 +76,7 @@ function MainCardSkeleton() {
 }
 
 export default function MainPageCard() {
-  const [loading, setLoading] = useState(false);
+  const [loading, _] = useState(false);
   /*
   // simulate loading page
   useEffect(() => {

@@ -5,7 +5,6 @@ import { Confetti, CongratsCard } from '@/components/congrats.tsx'
 
 // get score from query params as number
 const score = Astro.url.searchParams.get('score') || '0';
-const url = new URL(Astro.request.url);
 const totalQuestions = Astro.url.searchParams.get('totalQuestions') || '0';
 ---
 
