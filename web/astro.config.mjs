@@ -6,6 +6,7 @@ import tailwind from "@astrojs/tailwind";
 import sitemap from "@astrojs/sitemap";
 import compress from "astro-compress";
 import { VitePWA } from "vite-plugin-pwa";
+import vercel from "@astrojs/vercel/serverless";
 import { manifest, seoConfig } from "./src/lib/seo";
 // https://astro.build/config
 export default defineConfig({
@@ -19,6 +20,7 @@ export default defineConfig({
     compress(),
   ],
   output: "server",
+  adapter: vercel(),
   vite: {
     plugins: [
       VitePWA({
