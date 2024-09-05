@@ -27,7 +27,7 @@ function MainCardSkeleton() {
   return (
     <Card>
       <CardHeader>
-        <Skeleton className="h-8 w-24 mb-2" /> {/* Title */}
+        <Skeleton className="h-6 w-18 mb-2" /> {/* Title */}
         <Skeleton className="h-4 w-56" /> {/* Description */}
       </CardHeader>
       <CardContent className="grid gap-6">
@@ -105,11 +105,9 @@ function MainCard() {
     <Card>
       <CardHeader>
         <CardTitle>DilDash</CardTitle>
-        <CardDescription>
-          Choose your level blah blah blah blah blah
-        </CardDescription>
+        <CardDescription>Choose your level</CardDescription>
       </CardHeader>
-      <CardContent className="grid gap-6">
+      <CardContent className="grid gap-3">
         <RadioGroup
           onValueChange={(v) => setLevel(v)}
           defaultValue={level}
@@ -124,7 +122,7 @@ function MainCard() {
             />
             <Label
               htmlFor="beginner"
-              className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-transparent p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+              className="flex flex-col items-center justify-between rounded-md border-[1px] border-muted bg-transparent p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
             >
               <Icons.level_beginner className="mb-3 h-6 w-6" />
               Beginner
@@ -139,7 +137,7 @@ function MainCard() {
             />
             <Label
               htmlFor="intermediate"
-              className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-transparent p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
+              className="flex flex-col items-center justify-between rounded-md border-[1px] border-muted bg-transparent p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
             >
               <Icons.level_intermediate className="mb-3 h-6 w-6" />
               Intermediate
@@ -154,7 +152,7 @@ function MainCard() {
             />
             <Label
               htmlFor="advanced"
-              className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-transparent p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary "
+              className="flex flex-col items-center justify-between rounded-md border-[1px] border-muted bg-transparent p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary "
             >
               <Icons.level_advanced className="mb-3 h-6 w-6" />
               Advanced

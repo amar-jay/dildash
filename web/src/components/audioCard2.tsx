@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import {
   Play,
   Pause,
-  AudioWaveformIcon as TranscriptionIcon,
+  CaptionsIcon as TranscriptionIcon,
+  CaptionsOffIcon as NoTranscriptionIcon,
   Volume2,
   Mic,
   Download,
@@ -53,15 +54,16 @@ const AudioPlayer = ({
         <div className="space-y-4">
           {/* Audio Title and Transcription Toggle */}
           <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-semibold">Listening Practice</h2>
+            <h2 className="text-2xl font-semibold">Listening Player</h2>
 
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
+                  variant="secondary"
                   onClick={() => setIsTranscribing(false)}
                   id="transcription-mode"
                 >
-                  <TranscriptionIcon className="h-4 w-4" />
+                  <NoTranscriptionIcon className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -191,7 +193,7 @@ function AudioTranscriptionTabs({ transcripts }: { transcripts?: Speaker[] }) {
         <Card className="shadow-md">
           <CardContent className="p-4">
             <textarea
-              className="w-full h-[300px] p-2 text-sm border rounded-md resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full h-[300px] p-2 text-sm border rounded-md resize-none focus:outline-none focus:ring-[1px] focus:ring-blue-500"
               placeholder="Add your notes here..."
             />
           </CardContent>
@@ -206,9 +208,10 @@ function AudioTranscriptionTabsSplit({
 }: {
   transcripts?: Speaker[];
 }) {
+  const downloadTranscripts = () => {};
   return (
     <div defaultValue="transcript" className="w-full hidden md:block">
-      <h1 className="font-bold text-4xl text-center mb-5">Transcript</h1>
+      <h1 className="font-bold text-4xl text-center mb-5">Listening Player</h1>
       <div className="grid grid-cols-2 gap-5">
         <Card className="shadow-md">
           <CardContent className="p-4">
@@ -217,7 +220,7 @@ function AudioTranscriptionTabsSplit({
                 <Mic className="h-4 w-4 text-green-500" />
                 <span className="text-sm text-green-500">Transcribing...</span>
               </div>
-              <Button variant="outline" size="sm">
+              <Button variant="outline" size="sm" onClick={downloadTranscripts}>
                 <Download className="h-4 w-4 mr-2" />
                 Download Transcript
               </Button>
@@ -394,7 +397,7 @@ const FloatingAudioPlayer = ({
 
   return (
     <>
-      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 rounded-full shadow-sm p-2 flex items-center space-x-2 border-primary border-2">
+      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 rounded-full shadow-sm p-2 flex items-center space-x-2 border-primary border-[1px]">
         <Tooltip>
           <TooltipTrigger asChild>
             <Button
@@ -487,7 +490,7 @@ const FloatingAudioPlayer = ({
             </TooltipContent>
           </Tooltip>
           {duration != 0 && duration - currentTime < 50 && (
-            <div className="absolute bottom-full mb-0 sm:ml-12 md:ml-24 lg:ml-36 px-1 py-1 bg-white left-1/2 transform -translate-x-1/2 rounded-lg border-2 ">
+            <div className="absolute bottom-full mb-0 sm:ml-12 md:ml-24 lg:ml-36 px-1 py-1 bg-white left-1/2 transform -translate-x-1/2 rounded-lg border-[1px] ">
               <Button>
                 <a href={`/questions`}>Go to Questions</a>
               </Button>
@@ -495,7 +498,7 @@ const FloatingAudioPlayer = ({
           )}
 
           {isVolumeVisible && (
-            <div className="absolute bottom-full mb-2 px-2 py-2 bg-white left-1/2 transform -translate-x-1/2 rounded-lg border-2 ">
+            <div className="absolute bottom-full mb-2 px-2 py-2 bg-white left-1/2 transform -translate-x-1/2 rounded-lg border-[1px] ">
               <Slider
                 orientation="vertical"
                 className="h-24"
